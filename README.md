@@ -16,3 +16,8 @@
   # First boot of the stack
   From /opt/garmin-stack/app/deploy:
   docker compose up -d --build
+
+  # Use Alembic and run migrations as part of every deploy.
+  docker compose run --rm dashboard-web alembic upgrade head
+
+  
