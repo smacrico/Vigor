@@ -9,3 +9,10 @@
   exports/       # generated HTML reports
   backups/       # pg_dump backups
   nginx/         # nginx config
+
+  # The pipeline runs on demand through 
+  docker compose run --rm pipeline-runner ...
+
+  # First boot of the stack
+  From /opt/garmin-stack/app/deploy:
+  docker compose up -d --build

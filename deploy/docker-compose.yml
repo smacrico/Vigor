@@ -1,0 +1,53 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: garmin-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: garmin
+      POSTGRES_USER: jheel
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - /opt/garmin-stack/postgres:/var/lib/postgresql/data
+    networks:
+      - internal
+
+  dashboard-web:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: garmin-dashboard
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: >
+      streamlit run app/dashboard/streamlit_app.py
+      --server.port=8501
+      --server.address=0.0.0.0
+    volumes:
+      - /opt/garmin-stack/exports:/data/exports
+      - /opt/garmin-stack/imports:/data/imports
+    depends_on:
+      - postgres
+    networks:
+      - internal
+
+  nginx:
+    image: nginx:1.27
+    container_name: garmin-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /opt/garmin-stack/nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /opt/garmin-stack/nginx/certs:/etc/letsencrypt
+      - /opt/garmin-stack/nginx/www:/var/www/certbot
+    depends_on:
+      - dashboard-web
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge
