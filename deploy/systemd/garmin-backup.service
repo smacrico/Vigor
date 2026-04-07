@@ -1,0 +1,7 @@
+[Unit]
+Description=Nightly PostgreSQL backup
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/garmin-stack/app/deploy
+ExecStart=/bin/bash -lc '/usr/bin/docker exec garmin-postgres pg_dump -U garmin -d garmin > /opt/garmin-stack/backups/garmin_$(date +%%F).sql'

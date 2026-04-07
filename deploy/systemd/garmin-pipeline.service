@@ -1,0 +1,7 @@
+[Unit]
+Description=Garmin analytics pipeline
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/garmin-stack/app/deploy
+ExecStart=/usr/bin/docker compose run --rm dashboard-web python scripts/run_pipeline.py
